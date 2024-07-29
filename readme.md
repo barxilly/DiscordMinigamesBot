@@ -18,6 +18,8 @@ This is a discord bot that has a few minigames and fun commands. It is written i
 
 - `/minecrafttip` - Get a random minecraft recipe.
 
+- `/minecraftface` - Get the face of the username you provide.
+
 ### Realm Code
 
 - `/realm` - Get the code for the realms server.

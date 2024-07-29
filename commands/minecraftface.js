@@ -1,7 +1,7 @@
 module.exports = {
     data: {
         name: 'minecraftface',
-        description: 'Pulls a Minecraft face from a username.',
+        description: 'Pulls a Minecraft face from a username. (Java only)',
         "integration_types": [0,1],
         "contexts": [0, 1, 2],
         options: [
