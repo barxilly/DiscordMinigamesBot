@@ -12,9 +12,11 @@ This is a discord bot that has a few minigames and fun commands. It is written i
 
 - `/endstory` - End the current one word story.
 
-### Minecraft Ideas
+### Minecraft
 
 - `/minecraftidea` - Get a random minecraft idea.
+
+- `/minecrafttip` - Get a random minecraft recipe.
 
 ### Realm Code
 

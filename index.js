@@ -16,7 +16,7 @@ async function elBotMan(){
         for (const file of commandFiles) {
             const command = require(`./commands/${file}`);
             const data = command.data;
-            //await client.application.commands.create(data);
+            await client.application.commands.create(data);
             client.commands.set(data.name, command);
             console.log(`Command ${data.name} registered`);
         }
