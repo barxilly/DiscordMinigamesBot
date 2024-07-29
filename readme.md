@@ -4,6 +4,8 @@ This is a discord bot that has a few minigames and fun commands. It is written i
 
 ## Commands
 
+- `/help` - Get a list of all commands and their descriptions.
+
 ### One Word Story
 
 - `/startstory` - Start a new one word story in whatever channel you are in.
