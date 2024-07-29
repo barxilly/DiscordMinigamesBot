@@ -3,6 +3,8 @@ async function elBotMan(){
     const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
     require('dotenv').config();
     const TOKEN = process.env.TOKEN;
+    const REST = require('@discordjs/rest');
+    const { Routes } = require('discord-api-types/v9');
     const fs = require('fs');
 
     client.once('ready', async () => {
@@ -25,10 +27,15 @@ async function elBotMan(){
         if (message.author.id === client.user.id) return;
         fs.exists('./stories/' + message.channel.id + '.json', async function(exists){
             if (exists){
-                const story = require('./stories/' + message.channel.id + '.json');
+                const story = JSON.parse(fs.readFileSync('./stories/' + message.channel.id + '.json'));
                 // Check that the same user is not adding to the story
                 if (message.author.id === story.story[story.story.length - 1].author){
                     await message.reply({content:'You cannot add to the story twice in a row!', ephemeral: true});
+                    await message.delete();
+                    return;
+                    // Check if message is more than a word
+                } else if (message.content.split(' ').length > 1){
+                    await message.reply({content:'You can only add one word at a time!', ephemeral: true});
                     await message.delete();
                     return;
                 }
@@ -40,8 +47,16 @@ async function elBotMan(){
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                    await message.reply("Current story: " + story.story.map((entry) => entry.content).join(' '));
+                    await message.reply("## Current story\n" + story.story.map((entry) => entry.content).join(' '));
+                } else {
+                    const guild = client.guilds.cache.get('1232760247748399114');
+                    console.log(guild);
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
+                    console.log(emoji);
+                    await message.react(emoji);
                 }
+            } else {
+                story = {story: [{author: message.author.id, content: message.content}]};
             }
         });
     });
