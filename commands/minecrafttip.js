@@ -7,7 +7,7 @@ module.exports = {
     },
     async execute(interaction, client) {
         await interaction.deferReply();
-        await interaction.reply([
+        await interaction.editReply([
             "Always carry a bucket of water for emergencies, like falling into lava.",
             "Use torches to light up caves and prevent mobs from spawning.",
             "Keep a crafting table in your inventory for quick crafting.",
