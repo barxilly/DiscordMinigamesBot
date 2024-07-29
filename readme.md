@@ -16,6 +16,16 @@ This is a discord bot that has a few minigames and fun commands. It is written i
 
 - `/minecraftidea` - Get a random minecraft idea.
 
+### Realm Code
+
+- `/realm` - Get the code for the realms server.
+  - To use this command, you need to append your `.env` file with the following content:
+
+    ```env
+    REALM=YOUR_REALM_CODE // The realm code, not including realms.gg/
+    REALMROLE=YOUR_REALM_ROLE // The role that can access the realm code, set to E if you want everyone to be able to access it
+    ```
+
 ## Installation
 
 1. Clone the repository
