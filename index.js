@@ -23,6 +23,10 @@ async function elBotMan(){
         console.log('Ready!');
     });
 
+    function titlecaseSentences(string){
+        return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
+    }
+
     client.on('messageCreate', async message => {
         if (message.author.id === client.user.id) return;
         fs.exists('./stories/' + message.channel.id + '.json', async function(exists){
@@ -49,13 +53,13 @@ async function elBotMan(){
                 }
                 story.story.push({author: message.author.id, content: message.content});
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 2000){
+                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900){
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
-                    await message.reply("Current story: " + story.story.map((entry) => entry.content).join(' '));
+                    await message.reply("## Current story\n" + titlecaseSentences(story.story.map((entry) => entry.content).join('\n')));
                 } else if (message.content.match(/(\.|!|\?)$/)){
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
@@ -65,7 +69,7 @@ async function elBotMan(){
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                    await message.reply("## Current story\n" + story.story.map((entry) => entry.content).join(' '));
+                    await message.reply("## Current story\n" + titlecaseSentences(story.story.map((entry) => entry.content).join('\n')));
                 } else {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
