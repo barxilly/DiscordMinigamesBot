@@ -34,7 +34,7 @@ async function elBotMan(){
                     console.log(guildi);
                     const emojii = guildi.emojis.cache.find(emoji => emoji.name === 'angry');
                     console.log(emojii);
-                    await message.reply({content:'You cannot add to the story twice in a row!' + emojii.toString(), ephemeral: true});
+                    await message.reply({content:'You cannot add to the story twice in a row!\n' + emojii.toString(), ephemeral: true});
                     await message.delete();
                     return;
                     // Check if message is more than a word
@@ -43,7 +43,7 @@ async function elBotMan(){
                     console.log(guildi);
                     const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
                     console.log(emojii);
-                    await message.reply({content:'You can only add one word at a time!' + emojii.toString(), ephemeral: true});
+                    await message.reply({content:'You can only add one word at a time!\n' + emojii.toString(), ephemeral: true});
                     await message.delete();
                     return;
                 }
