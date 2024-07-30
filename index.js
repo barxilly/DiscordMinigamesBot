@@ -41,7 +41,7 @@ async function elBotMan(){
                 }
                 story.story.push({author: message.author.id, content: message.content});
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length > 2000){
+                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 2000){
                     await message.reply("Current story: " + story.story.map((entry) => entry.content).join(' '));
                 } else if (message.content.match(/(\.|!|\?)$/)){
                     // Remove the first 10 entries in the story
