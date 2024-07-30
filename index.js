@@ -30,20 +30,38 @@ async function elBotMan(){
                 const story = JSON.parse(fs.readFileSync('./stories/' + message.channel.id + '.json'));
                 // Check that the same user is not adding to the story
                 if (message.author.id === story.story[story.story.length - 1].author){
-                    await message.reply({content:'You cannot add to the story twice in a row!', ephemeral: true});
+                    const guildi = client.guilds.cache.get('1232760247748399114');
+                    console.log(guildi);
+                    const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
+                    console.log(emojii);
+                    await message.reply({content:'You cannot add to the story twice in a row!' + emojii.toString(), ephemeral: true});
                     await message.delete();
                     return;
                     // Check if message is more than a word
                 } else if (message.content.split(' ').length > 1){
-                    await message.reply({content:'You can only add one word at a time!', ephemeral: true});
+                    const guildi = client.guilds.cache.get('1232760247748399114');
+                    console.log(guildi);
+                    const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
+                    console.log(emojii);
+                    await message.reply({content:'You can only add one word at a time!' + emojii.toString(), ephemeral: true});
                     await message.delete();
                     return;
                 }
                 story.story.push({author: message.author.id, content: message.content});
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 2000){
+                    const guild = client.guilds.cache.get('1232760247748399114');
+                    console.log(guild);
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
+                    console.log(emoji);
+                    await message.react(emoji);
                     await message.reply("Current story: " + story.story.map((entry) => entry.content).join(' '));
                 } else if (message.content.match(/(\.|!|\?)$/)){
+                    const guild = client.guilds.cache.get('1232760247748399114');
+                    console.log(guild);
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
+                    console.log(emoji);
+                    await message.react(emoji);
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
