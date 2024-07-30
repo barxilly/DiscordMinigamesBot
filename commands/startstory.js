@@ -5,7 +5,7 @@ module.exports = {
     },
     async execute(interaction, client) {
         await interaction.deferReply();
-        if (interaction.author.username !== 'eccdev') {
+        if (interaction.user.id !== '806130824256421948') {
             await interaction.editReply('You do not have permission to use this command!');
         } else {
             const fs = require('fs');
