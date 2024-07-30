@@ -6,7 +6,12 @@ module.exports = {
         "contexts": [0, 1, 2],
     },
     async execute(interaction, client) {
-        await interaction.reply(`Pong!`);
+        await interaction.deferReply();
+        if (interaction.author.username !== 'eccdev'){
+            await interaction.editReply('You do not have permission to use this command!');
+            return;
+        }
+        await interaction.editReply(`Pong!`);
     },
 };
 
