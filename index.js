@@ -32,7 +32,7 @@ async function elBotMan(){
                 if (message.author.id === story.story[story.story.length - 1].author){
                     const guildi = client.guilds.cache.get('1232760247748399114');
                     console.log(guildi);
-                    const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
+                    const emojii = guildi.emojis.cache.find(emoji => emoji.name === 'angry');
                     console.log(emojii);
                     await message.reply({content:'You cannot add to the story twice in a row!' + emojii.toString(), ephemeral: true});
                     await message.delete();
