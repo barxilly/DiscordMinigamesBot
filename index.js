@@ -19,10 +19,12 @@ async function elBotMan() {
             // botnie-updates channel
             let channel = guild.channels.cache.get('1245793343858938047');
             await channel.send("## " + update);
+            console.log("Update message sent")
 
             let oldUpdater = fs.writeFileSync('oldupdate.md', update);
         }
 
+        console.log('Started refreshing application (/) commands.');
         client.commands = new Map();
         const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
@@ -34,6 +36,7 @@ async function elBotMan() {
             client.commands.set(data.name, command);
             console.log(`Command ${data.name} registered`);
         }
+        
         console.log('Ready!');
     });
 
