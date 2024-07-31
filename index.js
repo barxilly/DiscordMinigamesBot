@@ -74,9 +74,9 @@ async function elBotMan() {
                 }
                 story.story.push({ author: message.author.id, content: message.content });
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
-                    const fetch = (await import('node-fetch')).default;
+                const googleTTS = require('google-tts-api');
 
+                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
@@ -86,15 +86,15 @@ async function elBotMan() {
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
                     const storyText = sentences.join(' ');
 
-                    // Fetch TTS audio URL
-                    const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
-                    const response = await fetch(ttsUrl);
-                    const data = await response.json();
-                    const audioUrl = data.URL;
+                    // Generate TTS audio URL
+                    const audioUrl = googleTTS.getAudioUrl(storyText, {
+                        lang: 'en',
+                        slow: false,
+                        host: 'https://translate.google.com',
+                    });
 
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\nListen to the story`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
-                    const fetch = (await import('node-fetch')).default;
                     const fs = require('fs');
 
                     const guild = client.guilds.cache.get('1232760247748399114');
@@ -105,24 +105,19 @@ async function elBotMan() {
 
                     // Remove the first 10 entries in the story
                     story.story.shift();
-                    fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
+                    fs.writeFile('./stories/' + message.channel.id + '.json', JSON.stringify(story));
 
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
                     const storyText = sentences.join(' ');
 
-                    // Fetch TTS audio URL
-                    const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
-                    const response = await fetch(ttsUrl);
-                    const data = await response.json();
-                    const audioUrl = data.URL;
+                    // Generate TTS audio URL
+                    const audioUrl = googleTTS.getAudioUrl(storyText, {
+                        lang: 'en',
+                        slow: false,
+                        host: 'https://translate.google.com',
+                    });
 
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
-                } else {
-                    const guild = client.guilds.cache.get('1232760247748399114');
-                    console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
-                    console.log(emoji);
-                    await message.react(emoji);
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\nListen to the story`);
                 }
             } else {
                 story = { story: [{ author: message.author.id, content: message.content }] };
