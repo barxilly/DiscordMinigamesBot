@@ -1,3 +1,3 @@
-DigiTruths Update - 1.1.0
+DigiTruths Update - 1.1.1
 **Features:**
-- One word story now includes audio when a sentence is completed.
+- One word story now uses Google TTS
