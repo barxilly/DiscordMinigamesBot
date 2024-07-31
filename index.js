@@ -24,18 +24,18 @@ async function elBotMan() {
 
     client.on('messageCreate', async message => {
         if (message.author.id === client.user.id) return;
-    
-        // Check if the message contains "Diggin"
+
+       
         if (message.content.includes("Diggin")) {
-            // Generate a random number between 1 and 5
+           
             const randomChance = Math.floor(Math.random() * 5) + 1;
-            // If the number is 1, react with the poop emoji
+           
             if (randomChance === 1) {
-                const poopEmoji = '💩'; // Unicode for poop emoji
+                const poopEmoji = '💩';
                 await message.react(poopEmoji);
             }
         }
-    
+
         await handleStoryMessage(client, message);
     });
 
@@ -98,6 +98,10 @@ async function handleStoryMessage(client, message) {
         story.story.push({ author: message.author.id, content: message.content });
         fs.writeFileSync(storyFilePath, JSON.stringify(story));
 
+        const guild = client.guilds.cache.get('1232760247748399114');
+        const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
+        await message.react(emoji);
+
         if (message.content.match(/(\.|!|\?)$/)) {
             await handleStoryCompletion(client, message, story);
         }
@@ -115,10 +119,6 @@ async function sendErrorMessage(client, message, errorMessage) {
 }
 
 async function handleStoryCompletion(client, message, story) {
-    const guild = client.guilds.cache.get('1232760247748399114');
-    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
-    await message.react(emoji);
-
     const sentences = story.story.map(entry => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
     const storyText = sentences.join(' ');
 
