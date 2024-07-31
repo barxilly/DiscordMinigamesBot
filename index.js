@@ -6,7 +6,6 @@ async function elBotMan() {
     const REST = require('@discordjs/rest');
     const { Routes } = require('discord-api-types/v9');
     const fs = require('fs');
-    const googleTTS = require('google-tts-api'); // Import google-tts-api
 
     client.once('ready', async () => {
         console.log('Logged in as ' + client.user.tag);
@@ -45,6 +44,10 @@ async function elBotMan() {
         console.log('Ready!');
     });
 
+    function titlecaseSentences(string) {
+        return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
+    }
+
     client.on('messageCreate', async message => {
         if (message.author.id === client.user.id) return;
         fs.exists('./stories/' + message.channel.id + '.json', async function (exists) {
@@ -72,21 +75,56 @@ async function elBotMan() {
                 story.story.push({ author: message.author.id, content: message.content });
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
+                    const fetch = (await import('node-fetch')).default;
+                    const googleTTS = require('google-tts-api');
+
+                    const guild = client.guilds.cache.get('1232760247748399114');
+                    console.log(guild);
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
+                    console.log(emoji);
+                    await message.react(emoji);
+
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
                     const storyText = sentences.join(' ');
 
-                    // Fetch TTS audio URL using google-tts-api
-                    const ttsUrl = googleTTS.getAudioUrl(storyText, {
+                    // Fetch TTS audio URL
+                    const audioUrl = googleTTS.getAudioUrl(storyText, {
                         lang: 'en',
                         slow: false,
                         host: 'https://translate.google.com',
                     });
 
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${ttsUrl})`);
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
+                } else if (message.content.match(/(\.|!|\?)$/)) {
+                    const fetch = (await import('node-fetch')).default;
+                    const fs = require('fs');
+                    const googleTTS = require('google-tts-api');
+
+                    const guild = client.guilds.cache.get('1232760247748399114');
+                    console.log(guild);
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
+                    console.log(emoji);
+                    await message.react(emoji);
+
+                    // Remove the first 10 entries in the story
+                    story.story.shift();
+                    fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
+
+                    const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
+                    const storyText = sentences.join(' ');
+
+                    // Fetch TTS audio URL
+                    const audioUrl = googleTTS.getAudioUrl(storyText, {
+                        lang: 'en',
+                        slow: false,
+                        host: 'https://translate.google.com',
+                    });
+
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz'); // Change emoji name to 'happyliz'
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
                     console.log(emoji);
                     await message.react(emoji);
                 }
@@ -115,10 +153,6 @@ async function elBotMan() {
     });
 
     await client.login(TOKEN);
-}
-
-function titlecaseSentences(string) {
-    return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
 }
 
 elBotMan();
