@@ -117,7 +117,7 @@ async function sendErrorMessage(client, message, errorMessage) {
 }
 
 async function handleStoryCompletion(client, message, story) {
-    const sentences = story.story.map(entry => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
+    const sentences = story.story.map(entry => entry.content).join(' ').split('. ').map(sentence => sentence.trim());
     const storyText = sentences.join(' ');
 
     const googleTTS = require('google-tts-api');
@@ -149,7 +149,10 @@ async function handleCommandInteraction(client, interaction) {
 }
 
 function titlecaseSentences(string) {
-    return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
+    // Split the string into sentences, capitalize the first letter of each sentence, lowercase the rest of the sentence, stitch it back together. Sentences can end with ., !, or ?
+    const sentences = string.split(/(?<=[.!?])\s+/);
+    const titlecaseSentences = sentences.map(sentence => sentence.charAt(0).toUpperCase() + sentence.slice(1).toLowerCase());
+    return titlecaseSentences.join(' ');
 }
 
 elBotMan();
