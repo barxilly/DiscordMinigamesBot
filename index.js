@@ -1,158 +1,157 @@
+const { Client, GatewayIntentBits } = require('discord.js');
+const { REST } = require('@discordjs/rest');
+const { Routes } = require('discord-api-types/v9');
+const fs = require('fs');
+require('dotenv').config();
+
 async function elBotMan() {
-    const { Client, Intents, GatewayIntentBits } = require('discord.js');
-    const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
-    require('dotenv').config();
+    const client = new Client({
+        intents: [
+            GatewayIntentBits.Guilds,
+            GatewayIntentBits.GuildMessages,
+            GatewayIntentBits.MessageContent
+        ]
+    });
+
     const TOKEN = process.env.TOKEN;
-    const REST = require('@discordjs/rest');
-    const { Routes } = require('discord-api-types/v9');
-    const fs = require('fs');
 
     client.once('ready', async () => {
-        console.log('Logged in as ' + client.user.tag);
-        let update = fs.readFileSync('update.md');
-        let oldUpdate = fs.readFileSync('oldupdate.md');
-        if (update.toString() !== oldUpdate.toString()) {
-            try {
-                console.log("Sending update message")
-                fs.writeFileSync('oldupdate.md', update);
-                let guild = client.guilds.cache.get('1060699179879510128');
-                // botnie-updates channel
-                let channel = guild.channels.cache.get('1245793343858938047');
-                await channel.send("## " + update);
-                console.log("Update message sent")
-
-                let oldUpdater = fs.writeFileSync('oldupdate.md', update);
-            } catch (e) {
-                console.log("Error sending update message: " + e.toString());
-                fs.writeFileSync('oldupdate.md', " ");
-            }
-        }
-
-        console.log('Started refreshing application (/) commands.');
-        client.commands = new Map();
-        const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-
-        // Loop through each file and register the command
-        for (const file of commandFiles) {
-            const command = require(`./commands/${file}`);
-            const data = command.data;
-            //await client.application.commands.create(data);
-            client.commands.set(data.name, command);
-            console.log(`Command ${data.name} registered`);
-        }
-
+        console.log(`Logged in as ${client.user.tag}`);
+        await handleUpdateMessage(client);
+        await refreshCommands(client);
         console.log('Ready!');
     });
 
-    function titlecaseSentences(string) {
-        return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
-    }
-
     client.on('messageCreate', async message => {
         if (message.author.id === client.user.id) return;
-        fs.exists('./stories/' + message.channel.id + '.json', async function (exists) {
-            if (exists) {
-                const story = JSON.parse(fs.readFileSync('./stories/' + message.channel.id + '.json'));
-                // Check that the same user is not adding to the story
-                if (message.author.id === story.story[story.story.length - 1].author) {
-                    const guildi = client.guilds.cache.get('1232760247748399114');
-                    console.log(guildi);
-                    const emojii = guildi.emojis.cache.find(emoji => emoji.name === 'angry');
-                    console.log(emojii);
-                    await message.reply({ content: 'You cannot add to the story twice in a row!\n' + emojii.toString(), ephemeral: true });
-                    await message.delete();
-                    return;
-                    // Check if message is more than a word
-                } else if (message.content.split(' ').length > 1) {
-                    const guildi = client.guilds.cache.get('1232760247748399114');
-                    console.log(guildi);
-                    const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
-                    console.log(emojii);
-                    await message.reply({ content: 'You can only add one word at a time!\n' + emojii.toString(), ephemeral: true });
-                    await message.delete();
-                    return;
-                }
-                story.story.push({ author: message.author.id, content: message.content });
-                fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
-                    const fetch = (await import('node-fetch')).default;
-                    const googleTTS = require('google-tts-api');
-
-                    const guild = client.guilds.cache.get('1232760247748399114');
-                    console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
-                    console.log(emoji);
-                    await message.react(emoji);
-
-                    const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
-                    const storyText = sentences.join(' ');
-
-                    // Fetch TTS audio URL
-                    const audioUrl = googleTTS.getAudioUrl(storyText, {
-                        lang: 'en',
-                        slow: false,
-                        host: 'https://translate.google.com',
-                    });
-
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
-                } else if (message.content.match(/(\.|!|\?)$/)) {
-                    const fetch = (await import('node-fetch')).default;
-                    const fs = require('fs');
-                    const googleTTS = require('google-tts-api');
-
-                    const guild = client.guilds.cache.get('1232760247748399114');
-                    console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
-                    console.log(emoji);
-                    await message.react(emoji);
-
-                    // Remove the first 10 entries in the story
-                    story.story.shift();
-                    fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-
-                    const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
-                    const storyText = sentences.join(' ');
-
-                    // Fetch TTS audio URL
-                    const audioUrl = googleTTS.getAudioUrl(storyText, {
-                        lang: 'en',
-                        slow: false,
-                        host: 'https://translate.google.com',
-                    });
-
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
-                } else {
-                    const guild = client.guilds.cache.get('1232760247748399114');
-                    console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
-                    console.log(emoji);
-                    await message.react(emoji);
-                }
-            } else {
-                story = { story: [{ author: message.author.id, content: message.content }] };
+    
+        // Check if the message contains "Diggin"
+        if (message.content.includes("Diggin")) {
+            // Generate a random number between 1 and 5
+            const randomChance = Math.floor(Math.random() * 5) + 1;
+            // If the number is 1, react with the poop emoji
+            if (randomChance === 1) {
+                const poopEmoji = '💩'; // Unicode for poop emoji
+                await message.react(poopEmoji);
             }
-        });
+        }
+    
+        await handleStoryMessage(client, message);
     });
 
     client.on('interactionCreate', async interaction => {
         if (!interaction.isCommand()) return;
-        const { commandName } = interaction;
-        if (!client.commands.has(commandName)) return;
-        try {
-            await client.commands.get(commandName).execute(interaction, client);
-            lastCommand = commandName;
-        } catch (error) {
-            try {
-                lastError = error.toString() + " - Line 347";
-                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
-            } catch (e) {
-                lastError = e.toString() + "while sending error message:" + error.toString() + " - Line 352";
-                console.log(lastError);
-            }
-        }
+        await handleCommandInteraction(client, interaction);
     });
 
     await client.login(TOKEN);
+}
+
+async function handleUpdateMessage(client) {
+    const update = fs.readFileSync('update.md').toString();
+    const oldUpdate = fs.readFileSync('oldupdate.md').toString();
+
+    if (update !== oldUpdate) {
+        try {
+            console.log("Sending update message");
+            fs.writeFileSync('oldupdate.md', update);
+
+            const guild = client.guilds.cache.get('1060699179879510128');
+            const channel = guild.channels.cache.get('1245793343858938047');
+            await channel.send(`## ${update}`);
+            console.log("Update message sent");
+        } catch (e) {
+            console.error(`Error sending update message: ${e}`);
+            fs.writeFileSync('oldupdate.md', " ");
+        }
+    }
+}
+
+async function refreshCommands(client) {
+    console.log('Started refreshing application (/) commands.');
+    client.commands = new Map();
+    const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
+
+    for (const file of commandFiles) {
+        const command = require(`./commands/${file}`);
+        client.commands.set(command.data.name, command);
+        console.log(`Command ${command.data.name} registered`);
+    }
+}
+
+async function handleStoryMessage(client, message) {
+    const storyFilePath = `./stories/${message.channel.id}.json`;
+
+    if (fs.existsSync(storyFilePath)) {
+        const story = JSON.parse(fs.readFileSync(storyFilePath));
+
+        if (message.author.id === story.story[story.story.length - 1].author) {
+            await sendErrorMessage(client, message, 'You cannot add to the story twice in a row!');
+            return;
+        }
+
+        if (message.content.split(' ').length > 1) {
+            await sendErrorMessage(client, message, 'You can only add one word at a time!');
+            return;
+        }
+
+        story.story.push({ author: message.author.id, content: message.content });
+        fs.writeFileSync(storyFilePath, JSON.stringify(story));
+
+        if (message.content.match(/(\.|!|\?)$/)) {
+            await handleStoryCompletion(client, message, story);
+        }
+    } else {
+        const newStory = { story: [{ author: message.author.id, content: message.content }] };
+        fs.writeFileSync(storyFilePath, JSON.stringify(newStory));
+    }
+}
+
+async function sendErrorMessage(client, message, errorMessage) {
+    const guild = client.guilds.cache.get('1232760247748399114');
+    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'angry');
+    await message.reply({ content: `${errorMessage}\n${emoji}`, ephemeral: true });
+    await message.delete();
+}
+
+async function handleStoryCompletion(client, message, story) {
+    const guild = client.guilds.cache.get('1232760247748399114');
+    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
+    await message.react(emoji);
+
+    const sentences = story.story.map(entry => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
+    const storyText = sentences.join(' ');
+
+    const googleTTS = require('google-tts-api');
+    const audioUrl = googleTTS.getAudioUrl(storyText, {
+        lang: 'en',
+        slow: false,
+        host: 'https://translate.google.com',
+    });
+
+    await message.reply(`## Current story\n${titlecaseSentences(sentences.join('\n'))}\n\n[Listen to the story](${audioUrl})`);
+
+    if (storyText.length >= 1900) {
+        story.story.shift();
+        fs.writeFileSync(`./stories/${message.channel.id}.json`, JSON.stringify(story));
+    }
+}
+
+async function handleCommandInteraction(client, interaction) {
+    const { commandName } = interaction;
+
+    if (!client.commands.has(commandName)) return;
+
+    try {
+        await client.commands.get(commandName).execute(interaction, client);
+    } catch (error) {
+        console.error(`Error executing command ${commandName}: ${error}`);
+        await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
+    }
+}
+
+function titlecaseSentences(string) {
+    return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
 }
 
 elBotMan();
