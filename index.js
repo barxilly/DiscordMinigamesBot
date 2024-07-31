@@ -8,7 +8,6 @@ async function elBotMan() {
     const fs = require('fs');
 
     client.once('ready', async () => {
-        const fs = require('fs');
         let update = fs.readFileSync('update.md');
         let oldUpdate = fs.readFileSync('oldupdate.md');
         if (update.toString() !== oldUpdate.toString()) {
@@ -21,15 +20,15 @@ async function elBotMan() {
 
             let oldUpdater = fs.writeFileSync('oldupdate.md', update);
         }
+
         client.commands = new Map();
-        // Get all .js files in /commands directory
         const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
 
         // Loop through each file and register the command
         for (const file of commandFiles) {
             const command = require(`./commands/${file}`);
             const data = command.data;
-            await client.application.commands.create(data);
+            //await client.application.commands.create(data);
             client.commands.set(data.name, command);
             console.log(`Command ${data.name} registered`);
         }
