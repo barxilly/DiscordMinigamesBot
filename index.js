@@ -18,7 +18,7 @@ async function elBotMan() {
             await guild.members.fetch();
             // botnie-updates channel
             let channel = guild.channels.cache.get('1245793343858938047');
-            channel.send("## " + update);
+            await channel.send("## " + update);
 
             let oldUpdater = fs.writeFileSync('oldupdate.md', update);
         }
