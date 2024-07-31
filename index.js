@@ -54,24 +54,48 @@ async function elBotMan() {
                 story.story.push({ author: message.author.id, content: message.content });
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
+                    const fetch = require('node-fetch');
+                    
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
+                    
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')));
+                    const storyText = sentences.join(' ');
+                    
+                    // Fetch TTS audio URL
+                    const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
+                    const response = await fetch(ttsUrl);
+                    const data = await response.json();
+                    const audioUrl = data.URL;
+                    
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
+                    const fetch = require('node-fetch');
+                    const fs = require('fs');
+                    
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
+                    
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
+                    
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')));
+                    const storyText = sentences.join(' ');
+                    
+                    // Fetch TTS audio URL
+                    const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
+                    const response = await fetch(ttsUrl);
+                    const data = await response.json();
+                    const audioUrl = data.URL;
+                    
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
