@@ -75,7 +75,7 @@ async function elBotMan() {
                 story.story.push({ author: message.author.id, content: message.content });
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
-                    const fetch = require('node-fetch');
+                    const fetch = (await import('node-fetch')).default;
 
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
@@ -94,7 +94,7 @@ async function elBotMan() {
 
                     await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
-                    const fetch = require('node-fetch');
+                    const fetch = (await import('node-fetch')).default;
                     const fs = require('fs');
 
                     const guild = client.guilds.cache.get('1232760247748399114');
