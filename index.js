@@ -79,7 +79,7 @@ async function elBotMan() {
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
                     console.log(emoji);
                     await message.react(emoji);
 
@@ -87,7 +87,7 @@ async function elBotMan() {
                     const storyText = sentences.join(' ');
 
                     // Generate TTS audio URL
-                    const audioUrl = googleTTS.getAudioUrl(storyText, {
+                    const audioUrl = await googleTTS.getAudioUrl(storyText, {
                         lang: 'en',
                         slow: false,
                         host: 'https://translate.google.com',
@@ -96,10 +96,9 @@ async function elBotMan() {
                     await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
                     const fs = require('fs');
-
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
-                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
+                    const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
                     console.log(emoji);
                     await message.react(emoji);
 
@@ -111,7 +110,7 @@ async function elBotMan() {
                     const storyText = sentences.join(' ');
 
                     // Generate TTS audio URL
-                    const audioUrl = googleTTS.getAudioUrl(storyText, {
+                    const audioUrl = await googleTTS.getAudioUrl(storyText, {
                         lang: 'en',
                         slow: false,
                         host: 'https://translate.google.com',
