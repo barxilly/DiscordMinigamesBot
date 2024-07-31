@@ -106,8 +106,6 @@ async function handleStoryMessage(client, message) {
             await handleStoryCompletion(client, message, story);
         }
     } else {
-        const newStory = { story: [{ author: message.author.id, content: message.content }] };
-        fs.writeFileSync(storyFilePath, JSON.stringify(newStory));
     }
 }
 
