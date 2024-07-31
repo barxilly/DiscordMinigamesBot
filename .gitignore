@@ -4,3 +4,5 @@ node_modules/
 package-lock.json
 stories/
 .gitignore
+run.sh
+run.sh
