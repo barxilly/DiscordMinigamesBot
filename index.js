@@ -93,7 +93,7 @@ async function elBotMan() {
                         host: 'https://translate.google.com',
                     });
 
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\nListen to the story`);
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
                     const fs = require('fs');
 
@@ -117,7 +117,7 @@ async function elBotMan() {
                         host: 'https://translate.google.com',
                     });
 
-                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\nListen to the story`);
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 }
             } else {
                 story = { story: [{ author: message.author.id, content: message.content }] };
