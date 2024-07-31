@@ -1,4 +1,4 @@
-async function elBotMan(){
+async function elBotMan() {
     const { Client, Intents, GatewayIntentBits } = require('discord.js');
     const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildMessages, GatewayIntentBits.MessageContent] });
     require('dotenv').config();
@@ -23,44 +23,45 @@ async function elBotMan(){
         console.log('Ready!');
     });
 
-    function titlecaseSentences(string){
+    function titlecaseSentences(string) {
         return string.replace(/(^\w{1})|(\.\s+\w{1})/g, letter => letter.toUpperCase());
     }
 
     client.on('messageCreate', async message => {
         if (message.author.id === client.user.id) return;
-        fs.exists('./stories/' + message.channel.id + '.json', async function(exists){
-            if (exists){
+        fs.exists('./stories/' + message.channel.id + '.json', async function (exists) {
+            if (exists) {
                 const story = JSON.parse(fs.readFileSync('./stories/' + message.channel.id + '.json'));
                 // Check that the same user is not adding to the story
-                if (message.author.id === story.story[story.story.length - 1].author){
+                if (message.author.id === story.story[story.story.length - 1].author) {
                     const guildi = client.guilds.cache.get('1232760247748399114');
                     console.log(guildi);
                     const emojii = guildi.emojis.cache.find(emoji => emoji.name === 'angry');
                     console.log(emojii);
-                    await message.reply({content:'You cannot add to the story twice in a row!\n' + emojii.toString(), ephemeral: true});
+                    await message.reply({ content: 'You cannot add to the story twice in a row!\n' + emojii.toString(), ephemeral: true });
                     await message.delete();
                     return;
                     // Check if message is more than a word
-                } else if (message.content.split(' ').length > 1){
+                } else if (message.content.split(' ').length > 1) {
                     const guildi = client.guilds.cache.get('1232760247748399114');
                     console.log(guildi);
                     const emojii = guild.emojis.cache.find(emoji => emoji.name === 'angry');
                     console.log(emojii);
-                    await message.reply({content:'You can only add one word at a time!\n' + emojii.toString(), ephemeral: true});
+                    await message.reply({ content: 'You can only add one word at a time!\n' + emojii.toString(), ephemeral: true });
                     await message.delete();
                     return;
                 }
-                story.story.push({author: message.author.id, content: message.content});
+                story.story.push({ author: message.author.id, content: message.content });
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900){
+                if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
-                    await message.reply("## Current story\n" + titlecaseSentences(story.story.map((entry) => entry.content).join('\n')));
-                } else if (message.content.match(/(\.|!|\?)$/)){
+                    const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')));
+                } else if (message.content.match(/(\.|!|\?)$/)) {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
@@ -69,7 +70,8 @@ async function elBotMan(){
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                    await message.reply("## Current story\n" + titlecaseSentences(story.story.map((entry) => entry.content).join('\n')));
+                    const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
+                    await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')));
                 } else {
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
@@ -78,14 +80,14 @@ async function elBotMan(){
                     await message.react(emoji);
                 }
             } else {
-                story = {story: [{author: message.author.id, content: message.content}]};
+                story = { story: [{ author: message.author.id, content: message.content }] };
             }
         });
     });
 
     client.on('interactionCreate', async interaction => {
         if (!interaction.isCommand()) return;
-        const {commandName} = interaction;
+        const { commandName } = interaction;
         if (!client.commands.has(commandName)) return;
         try {
             await client.commands.get(commandName).execute(interaction, client);
@@ -93,7 +95,7 @@ async function elBotMan(){
         } catch (error) {
             try {
                 lastError = error.toString() + " - Line 347";
-                await interaction.reply({content: 'There was an error while executing this command!', ephemeral: true});
+                await interaction.reply({ content: 'There was an error while executing this command!', ephemeral: true });
             } catch (e) {
                 lastError = e.toString() + "while sending error message:" + error.toString() + " - Line 352";
                 console.log(lastError);
