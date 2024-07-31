@@ -12,16 +12,20 @@ async function elBotMan() {
         let update = fs.readFileSync('update.md');
         let oldUpdate = fs.readFileSync('oldupdate.md');
         if (update.toString() !== oldUpdate.toString()) {
-            console.log("Sending update message")
-            fs.writeFileSync('oldupdate.md', update);
-            let guild = client.guilds.cache.get('1060699179879510128');
-            await guild.members.fetch();
-            // botnie-updates channel
-            let channel = guild.channels.cache.get('1245793343858938047');
-            await channel.send("## " + update);
-            console.log("Update message sent")
+            try {
+                console.log("Sending update message")
+                fs.writeFileSync('oldupdate.md', update);
+                let guild = client.guilds.cache.get('1060699179879510128');
+                // botnie-updates channel
+                let channel = guild.channels.cache.get('1245793343858938047');
+                await channel.send("## " + update);
+                console.log("Update message sent")
 
-            let oldUpdater = fs.writeFileSync('oldupdate.md', update);
+                let oldUpdater = fs.writeFileSync('oldupdate.md', update);
+            } catch (e) {
+                console.log("Error sending update message: " + e.toString());
+                fs.writeFileSync('oldupdate.md', " ");
+            }
         }
 
         console.log('Started refreshing application (/) commands.');
@@ -36,7 +40,7 @@ async function elBotMan() {
             client.commands.set(data.name, command);
             console.log(`Command ${data.name} registered`);
         }
-        
+
         console.log('Ready!');
     });
 
@@ -72,46 +76,46 @@ async function elBotMan() {
                 fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
                 if (message.content.match(/(\.|!|\?)$/) && story.story.map((entry) => entry.content).join(' ').length < 1900) {
                     const fetch = require('node-fetch');
-                    
+
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
-                    
+
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
                     const storyText = sentences.join(' ');
-                    
+
                     // Fetch TTS audio URL
                     const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
                     const response = await fetch(ttsUrl);
                     const data = await response.json();
                     const audioUrl = data.URL;
-                    
+
                     await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else if (message.content.match(/(\.|!|\?)$/)) {
                     const fetch = require('node-fetch');
                     const fs = require('fs');
-                    
+
                     const guild = client.guilds.cache.get('1232760247748399114');
                     console.log(guild);
                     const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happy');
                     console.log(emoji);
                     await message.react(emoji);
-                    
+
                     // Remove the first 10 entries in the story
                     story.story.shift();
                     fs.writeFileSync('./stories/' + message.channel.id + '.json', JSON.stringify(story));
-                    
+
                     const sentences = story.story.map((entry) => entry.content).join(' ').split('. ').map(sentence => sentence.trim() + '.');
                     const storyText = sentences.join(' ');
-                    
+
                     // Fetch TTS audio URL
                     const ttsUrl = `https://ttsmp3.com/makemp3_new.php?msg=${encodeURIComponent(storyText)}&lang=Joey&source=ttsmp3`;
                     const response = await fetch(ttsUrl);
                     const data = await response.json();
                     const audioUrl = data.URL;
-                    
+
                     await message.reply("## Current story\n" + titlecaseSentences(sentences.join('\n')) + `\n\n[Listen to the story](${audioUrl})`);
                 } else {
                     const guild = client.guilds.cache.get('1232760247748399114');
