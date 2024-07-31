@@ -8,9 +8,11 @@ async function elBotMan() {
     const fs = require('fs');
 
     client.once('ready', async () => {
+        console.log('Logged in as ' + client.user.tag);
         let update = fs.readFileSync('update.md');
         let oldUpdate = fs.readFileSync('oldupdate.md');
         if (update.toString() !== oldUpdate.toString()) {
+            console.log("Sending update message")
             fs.writeFileSync('oldupdate.md', update);
             let guild = client.guilds.cache.get('1060699179879510128');
             await guild.members.fetch();
