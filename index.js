@@ -8,6 +8,19 @@ async function elBotMan() {
     const fs = require('fs');
 
     client.once('ready', async () => {
+        const fs = require('fs');
+        let update = fs.readFileSync('update.md');
+        let oldUpdate = fs.readFileSync('oldupdate.md');
+        if (update.toString() !== oldUpdate.toString()) {
+            fs.writeFileSync('oldupdate.md', update);
+            let guild = client.guilds.cache.get('1060699179879510128');
+            await guild.members.fetch();
+            // botnie-updates channel
+            let channel = guild.channels.cache.get('1245793343858938047');
+            channel.send("## " + update);
+
+            let oldUpdater = fs.writeFileSync('oldupdate.md', update);
+        }
         client.commands = new Map();
         // Get all .js files in /commands directory
         const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
