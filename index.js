@@ -122,7 +122,8 @@ async function handleStoryCompletion(client, message, story) {
     const storyText = sentences.join(' ');
 
     const googleTTS = require('google-tts-api');
-    const audioUrl = googleTTS.getAudioUrl(storyText, {
+    //The last 199 chars
+    const audioUrl = googleTTS.getAudioUrl( storyText.slice(-199), {
         lang: 'en',
         slow: false,
         host: 'https://translate.google.com',
