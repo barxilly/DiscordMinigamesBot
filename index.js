@@ -100,11 +100,12 @@ async function handleStoryMessage(client, message) {
 
         const guild = client.guilds.cache.get('1232760247748399114');
         const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
-        await message.react(emoji);
-
-        if (message.content.match(/(\.|!|\?)$/)) {
+        if (message.content.match(/[\.\?\!]/)) {
             await handleStoryCompletion(client, message, story);
         }
+        await message.react(emoji);
+
+        
     } else {
     }
 }
