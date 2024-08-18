@@ -95,8 +95,8 @@ async function handleStoryMessage(client, message) {
             return;
         }
 
-        story.story.push({ author: message.author.id, content: message.content });
-        fs.writeFileSync(storyFilePath, JSON.stringify(story));
+        await story.story.push({ author: message.author.id, content: message.content });
+        await fs.writeFileSync(storyFilePath, JSON.stringify(story));
 
         const guild = client.guilds.cache.get('1232760247748399114');
         const emoji = guild.emojis.cache.find(emoji => emoji.name === 'happyliz');
